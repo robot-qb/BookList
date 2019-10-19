@@ -2,6 +2,7 @@ package com.casper.testdrivendevelopment;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -18,23 +19,42 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.casper.testdrivendevelopment.data.BookSaver;
+import com.casper.testdrivendevelopment.data.model.Book;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class BookListMainActivity extends AppCompatActivity {
 
     public static final int CONTEXT_MENU_DELETE = 1;
-    public static final int CONTEXT_MENU_ADDNEW = 2;
-    public static final int CONTEXT_MENU_ABOUT = 3;
+    public static final int CONTEXT_MENU_UPDATE=CONTEXT_MENU_DELETE+1;
+    public static final int CONTEXT_MENU_ADDNEW = CONTEXT_MENU_UPDATE+1;
+    public static final int CONTEXT_MENU_ABOUT = CONTEXT_MENU_ADDNEW+1;
+    public static final int REQUEST_ADDNEW_CODE = 901;
+    public static final int REQUEST_UPDATE_CODE = 902;
+
     private ArrayList<Book> theBooks;
+
+    BookSaver bookSaver;
     private ListView list_view_books;
     private BooksArrayAdapter theAdapter;
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        bookSaver.save(theBooks);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_list_main);
 
-        InitData();
+        bookSaver=new BookSaver(this);
+        theBooks=bookSaver.load();
+        if(theBooks.size()==0)
+            InitData();
         list_view_books=(ListView)findViewById(R.id.list_view_books);
         theAdapter=new BooksArrayAdapter(this,R.layout.linearlayout,theBooks);
         list_view_books.setAdapter(theAdapter);
@@ -51,10 +71,42 @@ public class BookListMainActivity extends AppCompatActivity {
             menu.setHeaderTitle(theBooks.get(info.position).getTitle());//info.position是获取这个item的id
             //设置内容 参数1为分组，参数2对应条目的id，参数3是指排列顺序，默认排列即可
             menu.add(0, CONTEXT_MENU_DELETE, 0, "删除");
+            menu.add(0,CONTEXT_MENU_UPDATE,0,"更新");
             menu.add(0, CONTEXT_MENU_ADDNEW, 0, "新建");
             menu.add(0, CONTEXT_MENU_ABOUT, 0, "关于...");
         }
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch(requestCode){
+            case REQUEST_ADDNEW_CODE:
+                if(resultCode==RESULT_OK){
+                    int insertPosition= data.getIntExtra("position",0);
+                    String bookTitle=data.getStringExtra("book_title");
+                    double bookPrice=data.getDoubleExtra("book_price",0);
+                    theBooks.add(insertPosition,new Book(bookTitle,bookPrice,R.drawable.book_no_name));
+                    theAdapter.notifyDataSetChanged();
+
+                    Toast.makeText(this,"新建成功",Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case REQUEST_UPDATE_CODE:
+                if(resultCode==RESULT_OK){
+                    int position=data.getIntExtra("position",0);
+                    String name=data.getStringExtra("book_title");
+                    double price =data.getDoubleExtra("book_price",0);
+
+                    Book book=theBooks.get(position);
+                    book.setTitle(name);
+                    book.setPrice(price);
+                    theAdapter.notifyDataSetChanged();
+
+                    Toast.makeText(this, "更新成功", Toast.LENGTH_SHORT).show();
+                }
+        }
     }
 
     @Override
@@ -83,12 +135,21 @@ public class BookListMainActivity extends AppCompatActivity {
                         })
                         .create().show();
                 break;
-                
+            case CONTEXT_MENU_UPDATE:
+                AdapterView.AdapterContextMenuInfo menuinfo=(AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+                Book book=theBooks.get(menuinfo.position);
+                Intent intent2=new Intent(BookListMainActivity.this,NewBookActivity.class);
+                intent2.putExtra("position",menuinfo.position);
+                intent2.putExtra("book_title",book.getTitle());
+                intent2.putExtra("book_price",book.getPrice());
+                startActivityForResult(intent2, REQUEST_UPDATE_CODE);
+                break;
             case CONTEXT_MENU_ADDNEW:
                 final int insertPosition=((AdapterView.AdapterContextMenuInfo)item.getMenuInfo()).position;
-                theBooks.add(insertPosition,new Book("无名书籍", R.drawable.book_2));
-                theAdapter.notifyDataSetChanged();
-                Toast.makeText(BookListMainActivity.this,"新建成功",Toast.LENGTH_LONG).show();
+                Intent intent=new Intent(BookListMainActivity.this,NewBookActivity.class);
+                intent.putExtra("position",insertPosition);
+                startActivityForResult(intent, REQUEST_ADDNEW_CODE);
+
                 break;
             case CONTEXT_MENU_ABOUT:
                 Toast.makeText(BookListMainActivity.this,"图书列表",Toast.LENGTH_LONG).show();
@@ -99,9 +160,9 @@ public class BookListMainActivity extends AppCompatActivity {
 
     private void InitData() {
         theBooks=new ArrayList<Book>();
-        theBooks.add(new Book("软件项目管理案例教程（第4版）", R.drawable.book_2));
-        theBooks.add(new Book("创新工程实践", R.drawable.book_no_name));
-        theBooks.add(new Book("信息安全数学基础（第2版）", R.drawable.book_1));
+        theBooks.add(new Book("软件项目管理案例教程（第4版）",1, R.drawable.book_2));
+        theBooks.add(new Book("创新工程实践",1, R.drawable.book_no_name));
+        theBooks.add(new Book("信息安全数学基础（第2版）",1, R.drawable.book_1));
     }
 
     public ArrayList<Book> getListBooks(){
@@ -120,10 +181,12 @@ public class BookListMainActivity extends AppCompatActivity {
 
             ImageView img=(ImageView)item.findViewById(R.id.image_view_book_cover);
             TextView name=(TextView)item.findViewById(R.id.text_view_book_title);
+            TextView price=(TextView)item.findViewById(R.id.text_view_book_price);
 
             Book book_item= (Book) this.getItem(position);
             img.setImageResource(book_item.getCoverResourceId());
             name.setText(book_item.getTitle());
+            price.setText(book_item.getPrice()+"");
 
             return item;
 

@@ -2,7 +2,6 @@ package com.casper.testdrivendevelopment;
 
 
 import android.support.test.espresso.DataInteraction;
-import android.support.test.espresso.Espresso;
 
 import android.support.test.espresso.ViewInteraction;
 import android.support.test.filters.LargeTest;
@@ -12,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.ImageView;
+
+import com.casper.testdrivendevelopment.data.model.Book;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;

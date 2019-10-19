@@ -22,7 +22,7 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir : 'libs', include : [ '*.jar'])
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
     androidTestImplementation('com.android.support.test.espresso:espresso-core:3.0.0', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
@@ -33,6 +33,3 @@ dependencies {
     androidTestImplementation 'com.android.support.test:rules:1.0.2'
 
 }
-
-
-
