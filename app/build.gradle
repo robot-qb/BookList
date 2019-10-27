@@ -31,5 +31,8 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     implementation 'com.android.support:support-annotations:27.1.1'
     androidTestImplementation 'com.android.support.test:rules:1.0.2'
+    implementation 'com.automationrockstars:design:2.0.3'
+    implementation 'com.android.support:design:26.+'
+
 
 }

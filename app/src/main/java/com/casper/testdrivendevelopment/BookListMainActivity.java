@@ -5,6 +5,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.ContextMenu;
@@ -19,6 +22,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.casper.testdrivendevelopment.data.BookFragmentAdapter;
+import com.casper.testdrivendevelopment.data.BookListFragment;
 import com.casper.testdrivendevelopment.data.BookSaver;
 import com.casper.testdrivendevelopment.data.model.Book;
 
@@ -37,13 +42,16 @@ public class BookListMainActivity extends AppCompatActivity {
     private ArrayList<Book> theBooks;
 
     BookSaver bookSaver;
-    private ListView list_view_books;
+
     private BooksArrayAdapter theAdapter;
+
+
+
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        bookSaver.save(theBooks);
+        bookSaver.save();
     }
 
     @Override
@@ -55,16 +63,40 @@ public class BookListMainActivity extends AppCompatActivity {
         theBooks=bookSaver.load();
         if(theBooks.size()==0)
             InitData();
-        list_view_books=(ListView)findViewById(R.id.list_view_books);
+
         theAdapter=new BooksArrayAdapter(this,R.layout.linearlayout,theBooks);
-        list_view_books.setAdapter(theAdapter);
-        this.registerForContextMenu(list_view_books);
+
+        BookFragmentAdapter myPageAdapter = new BookFragmentAdapter(getSupportFragmentManager());
+
+        ArrayList<Fragment> datas = new ArrayList<Fragment>();
+        datas.add(new BookListFragment(theAdapter));
+        datas.add(new Fragment());
+        datas.add(new Fragment());
+
+        myPageAdapter.setData(datas);
+
+        ArrayList<String> titles = new ArrayList<String>();
+        titles.add("A");
+        titles.add("B");
+        titles.add("C");
+
+        myPageAdapter.setTitles(titles);
+
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tablayout);
+        ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
+// 将适配器设置进ViewPager
+        viewPager.setAdapter(myPageAdapter);
+// 将ViewPager与TabLayout相关联
+        tabLayout.setupWithViewPager(viewPager);
+
+
+
     }
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        if(v==list_view_books) {
+        if(v==findViewById(R.id.list_view_books)){
             //获取适配器
             AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
             //设置标题
@@ -87,7 +119,7 @@ public class BookListMainActivity extends AppCompatActivity {
                     int insertPosition= data.getIntExtra("position",0);
                     String bookTitle=data.getStringExtra("book_title");
                     double bookPrice=data.getDoubleExtra("book_price",0);
-                    theBooks.add(insertPosition,new Book(bookTitle,bookPrice,R.drawable.book_no_name));
+                    theBooks.add(insertPosition,new Book(bookTitle,bookPrice,R.drawable.a4));
                     theAdapter.notifyDataSetChanged();
 
                     Toast.makeText(this,"新建成功",Toast.LENGTH_SHORT).show();
@@ -160,16 +192,16 @@ public class BookListMainActivity extends AppCompatActivity {
 
     private void InitData() {
         theBooks=new ArrayList<Book>();
-        theBooks.add(new Book("软件项目管理案例教程（第4版）",1, R.drawable.book_2));
-        theBooks.add(new Book("创新工程实践",1, R.drawable.book_no_name));
-        theBooks.add(new Book("信息安全数学基础（第2版）",1, R.drawable.book_1));
+        theBooks.add(new Book("软件项目管理案例教程（第4版）",1, R.drawable.a1));
+        theBooks.add(new Book("创新工程实践",1, R.drawable.a2));
+        theBooks.add(new Book("信息安全数学基础（第2版）",1, R.drawable.a3));
     }
 
     public ArrayList<Book> getListBooks(){
         return theBooks;
     }
 
-    protected class BooksArrayAdapter extends ArrayAdapter<Book> {
+    public class BooksArrayAdapter extends ArrayAdapter<Book> {
         private int resourceId;
         public BooksArrayAdapter(@NonNull Context context, int resource, @NonNull List objects) {
             super(context, resource, objects);

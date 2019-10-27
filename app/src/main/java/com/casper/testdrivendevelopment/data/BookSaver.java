@@ -20,9 +20,9 @@ public class BookSaver {
         return books;
     }
 
-    public void save(ArrayList<Book> book){
+    public void save(){
         try{
-            books =book;
+
             ObjectOutputStream outputStream = new ObjectOutputStream(context.openFileOutput("Serializable.txt", Context.MODE_PRIVATE));
             outputStream.writeObject(books);
             outputStream.close();
