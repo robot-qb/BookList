@@ -46,8 +46,6 @@ public class BookListMainActivity extends AppCompatActivity {
     private BooksArrayAdapter theAdapter;
 
 
-
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -70,20 +68,21 @@ public class BookListMainActivity extends AppCompatActivity {
 
         ArrayList<Fragment> datas = new ArrayList<Fragment>();
         datas.add(new BookListFragment(theAdapter));
-        datas.add(new Fragment());
-        datas.add(new Fragment());
+        datas.add(new WebViewFragment());
+        datas.add(new MapViewFragment());
 
         myPageAdapter.setData(datas);
 
         ArrayList<String> titles = new ArrayList<String>();
-        titles.add("A");
-        titles.add("B");
-        titles.add("C");
+        titles.add("图书");
+        titles.add("新闻");
+        titles.add("卖家");
 
         myPageAdapter.setTitles(titles);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tablayout);
         ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
+        
 // 将适配器设置进ViewPager
         viewPager.setAdapter(myPageAdapter);
 // 将ViewPager与TabLayout相关联
@@ -191,7 +190,7 @@ public class BookListMainActivity extends AppCompatActivity {
     }
 
     private void InitData() {
-        theBooks=new ArrayList<Book>();
+
         theBooks.add(new Book("软件项目管理案例教程（第4版）",1, R.drawable.a1));
         theBooks.add(new Book("创新工程实践",1, R.drawable.a2));
         theBooks.add(new Book("信息安全数学基础（第2版）",1, R.drawable.a3));
