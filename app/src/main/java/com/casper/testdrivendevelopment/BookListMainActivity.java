@@ -18,12 +18,10 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.casper.testdrivendevelopment.data.BookFragmentAdapter;
-import com.casper.testdrivendevelopment.data.BookListFragment;
 import com.casper.testdrivendevelopment.data.BookSaver;
 import com.casper.testdrivendevelopment.data.model.Book;
 
@@ -82,7 +80,7 @@ public class BookListMainActivity extends AppCompatActivity {
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tablayout);
         ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
-        
+
 // 将适配器设置进ViewPager
         viewPager.setAdapter(myPageAdapter);
 // 将ViewPager与TabLayout相关联

@@ -2,6 +2,8 @@ package com.casper.testdrivendevelopment;
 
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +22,10 @@ import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.TextOptions;
 import com.baidu.mapapi.model.LatLng;
+import com.casper.testdrivendevelopment.data.ShopLoader;
+import com.casper.testdrivendevelopment.data.model.Shop;
+
+import java.util.ArrayList;
 
 
 /**
@@ -31,6 +37,8 @@ public class MapViewFragment extends Fragment {
     public MapViewFragment() {
         // Required empty public constructor
     }
+
+
 
     private MapView mMapView = null;
     @Override
@@ -61,9 +69,37 @@ public class MapViewFragment extends Fragment {
                 Toast.makeText(getContext(), "Marker被点击了！", Toast.LENGTH_SHORT).show();
                 return false;
             }
-    });
+        });
+        final ShopLoader shopLoader=new ShopLoader();
+        Handler handler=new Handler(){
+            public void handleMessage(Message msg){
+                drawShops(shopLoader.getShops());
+            }
+        };
+        shopLoader.load(handler,"http://file.nidama.net/class/mobile_develop/data/bookstore.json");
 
         return view;
+
+    }
+
+    void drawShops(ArrayList<Shop> shops){
+        if(mMapView==null)
+            return;
+        BaiduMap mbaiduMap = mMapView.getMap();
+        for(int i=0;i<shops.size();i++) {
+            Shop shop = shops.get(i);
+            LatLng cenpt = new LatLng(shop.getLatitude(), shop.getLongitude());//设定中心点坐标
+
+            BitmapDescriptor bitmap = BitmapDescriptorFactory.fromResource(R.drawable.book_icon);
+            //准备marker option添加marker使用
+            MarkerOptions markerOption = new MarkerOptions().icon(bitmap).position(cenpt);
+            //获取添加的marker 这样便于后续的操作
+            Marker marker = (Marker) mbaiduMap.addOverlay(markerOption);
+
+            OverlayOptions textOption = new TextOptions().bgColor(0xAAFFFF00).fontSize(50)
+                    .fontColor(0xFFFF00FF).text(shop.getName()).rotate(0).position(cenpt);
+            mbaiduMap.addOverlay(textOption);
+        }
 
     }
     @Override
