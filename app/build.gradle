@@ -18,12 +18,17 @@ android {
             jniLibs.srcDir 'libs'
         }
     }
+    //加入选项忽略没被模拟的类
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
 }
 
 dependencies {
@@ -38,6 +43,8 @@ dependencies {
     androidTestImplementation 'com.android.support.test:rules:1.0.2'
     implementation 'com.automationrockstars:design:2.0.3'
     implementation 'com.android.support:design:26.+'
+    testImplementation 'org.json:json:20190722'
+
 
 
 }
