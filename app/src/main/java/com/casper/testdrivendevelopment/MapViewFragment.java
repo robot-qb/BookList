@@ -21,6 +21,7 @@ import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.TextOptions;
+import com.baidu.mapapi.map.TextureMapView;
 import com.baidu.mapapi.model.LatLng;
 import com.casper.testdrivendevelopment.data.ShopLoader;
 import com.casper.testdrivendevelopment.data.model.Shop;
@@ -40,7 +41,7 @@ public class MapViewFragment extends Fragment {
 
 
 
-    private MapView mMapView = null;
+    private TextureMapView mMapView = null;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

@@ -68,6 +68,7 @@ public class BookListMainActivity extends AppCompatActivity {
         datas.add(new BookListFragment(theAdapter));
         datas.add(new WebViewFragment());
         datas.add(new MapViewFragment());
+        datas.add(new GameFragment());
 
         myPageAdapter.setData(datas);
 
@@ -75,6 +76,7 @@ public class BookListMainActivity extends AppCompatActivity {
         titles.add("图书");
         titles.add("新闻");
         titles.add("卖家");
+        titles.add("游戏");
 
         myPageAdapter.setTitles(titles);
 
